@@ -170,26 +170,26 @@ namespace Sonarr.Api.V3.Indexers
 
         [HttpGet]
         [Produces("application/json")]
-        public async Task<List<ReleaseResource>> GetReleases(int? seriesId, int? episodeId, int? seasonNumber)
+        public async Task<List<ReleaseResource>> GetReleases(int? seriesId, int? episodeId, int? seasonNumber, bool includeFallback = false)
         {
             if (episodeId.HasValue)
             {
-                return await GetEpisodeReleases(episodeId.Value);
+                return await GetEpisodeReleases(episodeId.Value, includeFallback);
             }
 
             if (seriesId.HasValue && seasonNumber.HasValue)
             {
-                return await GetSeasonReleases(seriesId.Value, seasonNumber.Value);
+                return await GetSeasonReleases(seriesId.Value, seasonNumber.Value, includeFallback);
             }
 
             return await GetRss();
         }
 
-        private async Task<List<ReleaseResource>> GetEpisodeReleases(int episodeId)
+        private async Task<List<ReleaseResource>> GetEpisodeReleases(int episodeId, bool includeFallback)
         {
             try
             {
-                var decisions = await _releaseSearchService.EpisodeSearch(episodeId, true, true);
+                var decisions = await _releaseSearchService.EpisodeSearch(episodeId, true, true, includeFallback);
                 var prioritizedDecisions = _prioritizeDownloadDecision.PrioritizeDecisions(decisions);
 
                 return MapDecisions(prioritizedDecisions);
@@ -205,11 +205,11 @@ namespace Sonarr.Api.V3.Indexers
             }
         }
 
-        private async Task<List<ReleaseResource>> GetSeasonReleases(int seriesId, int seasonNumber)
+        private async Task<List<ReleaseResource>> GetSeasonReleases(int seriesId, int seasonNumber, bool includeFallback)
         {
             try
             {
-                var decisions = await _releaseSearchService.SeasonSearch(seriesId, seasonNumber, false, false, true, true);
+                var decisions = await _releaseSearchService.SeasonSearch(seriesId, seasonNumber, false, false, true, true, includeFallback);
                 var prioritizedDecisions = _prioritizeDownloadDecision.PrioritizeDecisions(decisions);
 
                 return MapDecisions(prioritizedDecisions);

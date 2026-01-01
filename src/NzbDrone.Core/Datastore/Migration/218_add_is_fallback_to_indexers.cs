@@ -3,7 +3,7 @@ using NzbDrone.Core.Datastore.Migration.Framework;
 
 namespace NzbDrone.Core.Datastore.Migration
 {
-    [Migration(218)]
+    [Migration(1000)]
     public class add_is_fallback_to_indexers : NzbDroneMigrationBase
     {
         protected override void MainDbUpgrade()

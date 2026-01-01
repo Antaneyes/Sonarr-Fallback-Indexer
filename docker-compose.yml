@@ -20,5 +20,5 @@ services:
       - G:/Torrent:/downloads
       - G:/Plex/Series:/tv
     ports:
-      - 6989:8989
+      - 8989:8989
     restart: unless-stopped
