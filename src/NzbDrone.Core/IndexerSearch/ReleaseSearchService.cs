@@ -520,13 +520,25 @@ namespace NzbDrone.Core.IndexerSearch
             // Filter indexers to untagged indexers and indexers with intersecting tags
             indexers = indexers.Where(i => i.Definition.Tags.Empty() || i.Definition.Tags.Intersect(criteriaBase.Series.Tags).Any()).ToList();
 
-            _logger.ProgressInfo("Searching indexers for {0}. {1} active indexers", criteriaBase, indexers.Count);
+            var normalIndexers = indexers.Where(i => !((IndexerDefinition)i.Definition).IsFallback).ToList();
+            var fallbackIndexers = indexers.Where(i => ((IndexerDefinition)i.Definition).IsFallback).ToList();
 
-            var tasks = indexers.Select(indexer => DispatchIndexer(searchAction, indexer, criteriaBase));
+            _logger.ProgressInfo("Searching indexers for {0}. {1} active indexers", criteriaBase, normalIndexers.Count);
+
+            var tasks = normalIndexers.Select(indexer => DispatchIndexer(searchAction, indexer, criteriaBase));
 
             var batch = await Task.WhenAll(tasks);
 
             var reports = batch.SelectMany(x => x).ToList();
+            var resultsFound = _makeDownloadDecision.GetSearchDecision(reports, criteriaBase).ToList();
+
+            if (fallbackIndexers.Any() && ((!criteriaBase.InteractiveSearch && !resultsFound.Any(d => d.Approved)) || criteriaBase.IncludeFallback))
+            {
+                _logger.ProgressInfo("Searching fallback indexers for {0}. {1} fallback indexers", criteriaBase, fallbackIndexers.Count);
+                var fallbackTasks = fallbackIndexers.Select(indexer => DispatchIndexer(searchAction, indexer, criteriaBase));
+                reports.AddRange((await Task.WhenAll(fallbackTasks)).SelectMany(x => x));
+                resultsFound = _makeDownloadDecision.GetSearchDecision(reports, criteriaBase).ToList();
+            }
 
             _logger.ProgressDebug("Total of {0} reports were found for {1} from {2} indexers", reports.Count, criteriaBase, indexers.Count);
 
@@ -540,7 +552,7 @@ namespace NzbDrone.Core.IndexerSearch
                 _episodeService.UpdateLastSearchTime(criteriaBase.Episodes);
             }
 
-            return _makeDownloadDecision.GetSearchDecision(reports, criteriaBase).ToList();
+            return resultsFound;
         }
 
         private async Task<IList<ReleaseInfo>> DispatchIndexer(Func<IIndexer, Task<IList<ReleaseInfo>>> searchAction, IIndexer indexer, SearchCriteriaBase criteriaBase)

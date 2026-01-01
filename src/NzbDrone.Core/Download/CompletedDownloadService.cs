@@ -113,6 +113,8 @@ namespace NzbDrone.Core.Download
                 Enum.TryParse(historyItem.Data.GetValueOrDefault(EpisodeHistory.RELEASE_SOURCE, ReleaseSourceType.Unknown.ToString()), out ReleaseSourceType releaseSource);
 
                 // Show a warning if the release was matched by ID and the source is not interactive search
+                // FIX: Permitir importación automática incluso si el match es por ID
+                /*
                 if (seriesMatchType == SeriesMatchType.Id && releaseSource != ReleaseSourceType.InteractiveSearch)
                 {
                     trackedDownload.Warn("Found matching series via grab history, but release was matched to series by ID. Automatic import is not possible. See the FAQ for details.");
@@ -120,6 +122,7 @@ namespace NzbDrone.Core.Download
 
                     return;
                 }
+                */
             }
 
             trackedDownload.State = TrackedDownloadState.ImportPending;

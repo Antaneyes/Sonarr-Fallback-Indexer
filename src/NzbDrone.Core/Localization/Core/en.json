@@ -694,6 +694,7 @@
   "FailedToLoadTranslationsFromApi": "Failed to load translations from API",
   "FailedToLoadUiSettingsFromApi": "Failed to load UI settings from API",
   "Fallback": "Fallback",
+  "FallbackHelpText": "If enabled, this indexer will only be queried if other non-fallback indexers don't return any approved results, or when explicitly requested in an interactive search.",
   "False": "False",
   "FavoriteFolderAdd": "Add Favorite Folder",
   "FavoriteFolderRemove": "Remove Favorite Folder",

@@ -49,6 +49,7 @@ function EditIndexerModalContent(props) {
     tags,
     fields,
     priority,
+    isFallback,
     seasonSearchMaximumSingleEpisodeAge,
     protocol,
     downloadClientId
@@ -125,6 +126,18 @@ function EditIndexerModalContent(props) {
                   helpTextWarning={supportsSearch.value ? undefined : translate('SearchIsNotSupportedWithThisIndexer')}
                   isDisabled={!supportsSearch.value}
                   {...enableInteractiveSearch}
+                  onChange={onInputChange}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <FormLabel>{translate('Fallback')}</FormLabel>
+
+                <FormInputGroup
+                  type={inputTypes.CHECK}
+                  name="isFallback"
+                  helpText={translate('FallbackHelpText')}
+                  {...isFallback}
                   onChange={onInputChange}
                 />
               </FormGroup>

@@ -435,6 +435,10 @@
     "CustomFormatsSettings": "Configuración de formatos personalizados",
     "CustomFormatsSettingsSummary": "Formatos y configuraciones personalizados",
     "CutoffUnmet": "Límite no alcanzado",
+    "Fallback": "Fallback",
+    "FallbackHelpText": "Si está habilitado, este indexador solo se consultará si otros indexadores que no son de fallback no devuelven ningún resultado aprobado, o cuando se solicite explícitamente en una búsqueda interactiva.",
+    "SearchInFallback": "Buscar en Fallback",
+    "SearchInFallbackIndexersHelpText": "Buscar en indexadores de fallback (más lento)",
     "DailyEpisodeFormat": "Formato de episodio diario",
     "Database": "Base de datos",
     "DelayMinutes": "{delay} minutos",
@@ -2143,6 +2147,5 @@
     "IndexerSettingsFailDownloadsHelpText": "Mientras se procesan las descargas completadas, {appName} tratará esos tipos de archivo seleccionados como descargas fallidas.",
     "IndexerSettingsFailDownloads": "Fallo de Descargas",
     "NotificationsTelegramSettingsIncludeInstanceNameHelpText": "Opcionalmente incluye el nombre de la instancia en la notificación",
-    "NotificationsTelegramSettingsIncludeInstanceName": "Incluir el nombre de la instancia en el título",
-    "Fallback": "Retirada"
+    "NotificationsTelegramSettingsIncludeInstanceName": "Incluir el nombre de la instancia en el título"
 }

@@ -74,6 +74,7 @@ class Indexer extends Component {
       supportsRss,
       supportsSearch,
       priority,
+      isFallback,
       showPriority
     } = this.props;
 
@@ -100,39 +101,45 @@ class Indexer extends Component {
 
           {
             supportsRss && enableRss &&
-              <Label kind={kinds.SUCCESS}>
-                {translate('Rss')}
-              </Label>
+            <Label kind={kinds.SUCCESS}>
+              {translate('Rss')}
+            </Label>
           }
 
           {
             supportsSearch && enableAutomaticSearch &&
-              <Label kind={kinds.SUCCESS}>
-                {translate('AutomaticSearch')}
-              </Label>
+            <Label kind={kinds.SUCCESS}>
+              {translate('AutomaticSearch')}
+            </Label>
           }
 
           {
             supportsSearch && enableInteractiveSearch &&
-              <Label kind={kinds.SUCCESS}>
-                {translate('InteractiveSearch')}
-              </Label>
+            <Label kind={kinds.SUCCESS}>
+              {translate('InteractiveSearch')}
+            </Label>
           }
 
           {
             showPriority &&
-              <Label kind={kinds.DEFAULT}>
-                {translate('Priority')}: {priority}
-              </Label>
+            <Label kind={kinds.DEFAULT}>
+              {translate('Priority')}: {priority}
+            </Label>
+          }
+          {
+            isFallback &&
+            <Label kind={kinds.WARNING}>
+              {translate('Fallback')}
+            </Label>
           }
           {
             !enableRss && !enableAutomaticSearch && !enableInteractiveSearch &&
-              <Label
-                kind={kinds.DISABLED}
-                outline={true}
-              >
-                {translate('Disabled')}
-              </Label>
+            <Label
+              kind={kinds.DISABLED}
+              outline={true}
+            >
+              {translate('Disabled')}
+            </Label>
           }
         </div>
 
@@ -166,6 +173,7 @@ Indexer.propTypes = {
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   priority: PropTypes.number.isRequired,
+  isFallback: PropTypes.bool.isRequired,
   enableRss: PropTypes.bool.isRequired,
   enableAutomaticSearch: PropTypes.bool.isRequired,
   enableInteractiveSearch: PropTypes.bool.isRequired,

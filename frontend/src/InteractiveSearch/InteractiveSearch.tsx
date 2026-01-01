@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ClientSideCollectionAppState from 'App/State/ClientSideCollectionAppState';
 import ReleasesAppState from 'App/State/ReleasesAppState';
 import Alert from 'Components/Alert';
+import Button from 'Components/Link/Button';
 import Icon from 'Components/Icon';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
@@ -187,6 +188,13 @@ function InteractiveSearch({ type, searchPayload }: InteractiveSearchProps) {
           filterModalConnectorComponentProps={{ type }}
           onFilterSelect={handleFilterSelect}
         />
+        <Button
+          className={styles.fallbackButton}
+          onPress={() => dispatch(fetchReleases({ ...searchPayload, includeFallback: true }))}
+          title={translate('SearchInFallbackIndexersHelpText')}
+        >
+          <Icon name={icons.SEARCH} /> {translate('SearchInFallback')}
+        </Button>
       </div>
 
       {isFetching ? <LoadingIndicator /> : null}

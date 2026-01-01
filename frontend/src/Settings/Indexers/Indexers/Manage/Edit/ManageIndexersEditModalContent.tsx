@@ -16,6 +16,7 @@ interface SavePayload {
   enableAutomaticSearch?: boolean;
   enableInteractiveSearch?: boolean;
   priority?: number;
+  isFallback?: boolean;
 }
 
 interface ManageIndexersEditModalContentProps {
@@ -57,6 +58,7 @@ function ManageIndexersEditModalContent(
   const [enableAutomaticSearch, setEnableAutomaticSearch] = useState(NO_CHANGE);
   const [enableInteractiveSearch, setEnableInteractiveSearch] =
     useState(NO_CHANGE);
+  const [isFallback, setIsFallback] = useState(NO_CHANGE);
   const [priority, setPriority] = useState<null | string | number>(null);
 
   const save = useCallback(() => {
@@ -76,6 +78,11 @@ function ManageIndexersEditModalContent(
     if (enableInteractiveSearch !== NO_CHANGE) {
       hasChanges = true;
       payload.enableInteractiveSearch = enableInteractiveSearch === 'enabled';
+    }
+
+    if (isFallback !== NO_CHANGE) {
+      hasChanges = true;
+      payload.isFallback = isFallback === 'enabled';
     }
 
     if (priority !== null) {
@@ -108,6 +115,9 @@ function ManageIndexersEditModalContent(
           break;
         case 'enableInteractiveSearch':
           setEnableInteractiveSearch(value);
+          break;
+        case 'isFallback':
+          setIsFallback(value);
           break;
         case 'priority':
           setPriority(value);
@@ -157,6 +167,18 @@ function ManageIndexersEditModalContent(
             type={inputTypes.SELECT}
             name="enableInteractiveSearch"
             value={enableInteractiveSearch}
+            values={enableOptions}
+            onChange={onInputChange}
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <FormLabel>{translate('Fallback')}</FormLabel>
+
+          <FormInputGroup
+            type={inputTypes.SELECT}
+            name="isFallback"
+            value={isFallback}
             values={enableOptions}
             onChange={onInputChange}
           />

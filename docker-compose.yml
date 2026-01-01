@@ -1,0 +1,24 @@
+services:
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr-test
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ./_output/net6.0/Sonarr.Core.dll:/app/sonarr/bin/Sonarr.Core.dll:ro
+      - ./_output/net6.0/Sonarr.Api.V3.dll:/app/sonarr/bin/Sonarr.Api.V3.dll:ro
+      - ./_output/net6.0/Sonarr.Common.dll:/app/sonarr/bin/Sonarr.Common.dll:ro
+      - ./_output/net6.0/Sonarr.Http.dll:/app/sonarr/bin/Sonarr.Http.dll:ro
+      - ./_output/net6.0/Sonarr.Host.dll:/app/sonarr/bin/Sonarr.Host.dll:ro
+      - ./_output/net6.0/Sonarr.SignalR.dll:/app/sonarr/bin/Sonarr.SignalR.dll:ro
+      - ./_output/net6.0/Sonarr.Mono.dll:/app/sonarr/bin/Sonarr.Mono.dll:ro
+      - ./_output/net6.0/Localization:/app/sonarr/bin/Localization:ro
+      - ./_output/UI:/app/sonarr/UI:ro
+      - C:/docker/sonarr-test/config:/config
+      - G:/Torrent:/downloads
+      - G:/Plex/Series:/tv
+    ports:
+      - 6989:8989
+    restart: unless-stopped
