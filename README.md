@@ -25,7 +25,7 @@ Este repo incluye todo lo necesario para correr Sonarr con estos cambios en segu
 
 1. **Configurar:** Ajusta las rutas en `docker-compose.yml`.
 2. **Lanzar:** Ejecuta `launch_sonarr.bat` (en Windows) o `docker-compose up -d`.
-3. **Acceso:** Entra en `http://localhost:6989`.
+3. **Acceso:** Entra en `http://localhost:8989`.
 
 > [!NOTE]
 > El despliegue de Docker monta automáticamente los binarios compilados y las traducciones corregidas en la imagen oficial de LinuxServer.
