@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NLog;
@@ -46,7 +45,10 @@ namespace NzbDrone.Core.Parser
         private static readonly Regex RealRegex = new (@"\b(?<real>REAL)\b",
                                                                 RegexOptions.Compiled);
 
-        private static readonly Regex ResolutionRegex = new (@"\b(?:(?<R360p>360p)|(?<R480p>480p|480i|640x480|848x480)|(?<R540p>540p)|(?<R576p>576p)|(?<R720p>720p|1280x720|960p)|(?<R1080p>1080p|1920x1080|1440p|FHD|1080i|4kto1080p)|(?<R2160p>2160p|3840x2160|4k[-_. ](?:UHD|HEVC|BD|H265)|(?:UHD|HEVC|BD|H265)[-_. ]4k))\b",
+        private static readonly Regex ResolutionRegex = new (@"\b(?:(?<R360p>360p)|(?<R480p>480p|480i|640x480|848x480)|(?<R540p>540p)|(?<R576p>576p)|(?<R720p>720p|1280x720|960p|m-?720)|(?<R1080p>1080p|1920x1080|1440p|FHD|1080i|4kto1080p|m-?1080)|(?<R2160p>2160p|3840x2160|4k[-_. ](?:UHD|HEVC|BD|H265)|(?:UHD|HEVC|BD|H265)[-_. ]4k|m-?2160|m-?4k|muhd))\b",
+                                                                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private static readonly Regex MHDRegex = new (@"\b(?<mhd>mHD|micro[-_. ]?HD|μHD|m-?720|m-?1080|m-?2160|muhd|m-?4k)\b",
                                                                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         // Handle cases where no resolution is in the release name (assume if UHD then 4k) or resolution is non-standard
@@ -83,7 +85,7 @@ namespace NzbDrone.Core.Parser
             {
                 try
                 {
-                    result.Quality = MediaFileExtensions.GetQualityForExtension(Path.GetExtension(name));
+                    result.Quality = NzbDrone.Core.MediaFiles.MediaFileExtensions.GetQualityForExtension(System.IO.Path.GetExtension(name));
                     result.SourceDetectionSource = QualityDetectionSource.Extension;
                     result.ResolutionDetectionSource = QualityDetectionSource.Extension;
                 }
@@ -98,6 +100,100 @@ namespace NzbDrone.Core.Parser
         }
 
         public static QualityModel ParseQualityName(string name)
+        {
+            var result = ParseQualityNameInternal(name);
+            var normalizedName = name.Replace('_', ' ').Trim();
+            var mhdMatch = MHDRegex.IsMatch(normalizedName);
+
+            if (mhdMatch)
+            {
+                if (result.Quality == Quality.HDTV720p)
+                {
+                    result.Quality = Quality.HDTV720pmHD;
+                }
+
+                if (result.Quality == Quality.HDTV1080p)
+                {
+                    result.Quality = Quality.HDTV1080pmHD;
+                }
+
+                if (result.Quality == Quality.HDTV2160p)
+                {
+                    result.Quality = Quality.HDTV2160pmHD;
+                }
+
+                if (result.Quality == Quality.WEBDL480p)
+                {
+                    result.Quality = Quality.WEBDL480pmHD;
+                }
+
+                if (result.Quality == Quality.WEBDL720p)
+                {
+                    result.Quality = Quality.WEBDL720pmHD;
+                }
+
+                if (result.Quality == Quality.WEBDL1080p)
+                {
+                    result.Quality = Quality.WEBDL1080pmHD;
+                }
+
+                if (result.Quality == Quality.WEBDL2160p)
+                {
+                    result.Quality = Quality.WEBDL2160pmHD;
+                }
+
+                if (result.Quality == Quality.WEBRip480p)
+                {
+                    result.Quality = Quality.WEBRip480pmHD;
+                }
+
+                if (result.Quality == Quality.WEBRip720p)
+                {
+                    result.Quality = Quality.WEBRip720pmHD;
+                }
+
+                if (result.Quality == Quality.WEBRip1080p)
+                {
+                    result.Quality = Quality.WEBRip1080pmHD;
+                }
+
+                if (result.Quality == Quality.WEBRip2160p)
+                {
+                    result.Quality = Quality.WEBRip2160pmHD;
+                }
+
+                if (result.Quality == Quality.Bluray480p)
+                {
+                    result.Quality = Quality.Bluray480pmHD;
+                }
+
+                if (result.Quality == Quality.Bluray576p)
+                {
+                    result.Quality = Quality.Bluray576pmHD;
+                }
+
+                if (result.Quality == Quality.Bluray720p)
+                {
+                    result.Quality = Quality.Bluray720pmHD;
+                }
+
+                if (result.Quality == Quality.Bluray1080p)
+                {
+                    result.Quality = Quality.Bluray1080pmHD;
+                }
+
+                if (result.Quality == Quality.Bluray2160p)
+                {
+                    result.Quality = Quality.Bluray2160pmHD;
+                }
+
+                result.ModifierDetectionSource = QualityDetectionSource.Name;
+            }
+
+            return result;
+        }
+
+        private static QualityModel ParseQualityNameInternal(string name)
         {
             var normalizedName = name.Replace('_', ' ').Trim();
             var result = ParseQualityModifiers(name, normalizedName);

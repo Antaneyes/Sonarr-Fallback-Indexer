@@ -405,6 +405,20 @@ namespace NzbDrone.Core.Test.ParserTests
             ParseAndVerifyQuality(title, Quality.Unknown, proper);
         }
 
+        [TestCase("Movie.Title.1080p.Bluray.mHD.x264", "Bluray-1080p-mHD")]
+        [TestCase("Movie.Title.720p.WEBDL.muhd.x264", "WEBDL-720p-mHD")]
+        [TestCase("Movie.Title.m1080.HDTV.x264", "HDTV-1080p-mHD")]
+        [TestCase("Movie.Title.1080p.Bluray.micro-HD.x264", "Bluray-1080p-mHD")]
+        [TestCase("Movie.Title.1080p.Bluray.microHD.x264", "Bluray-1080p-mHD")]
+        [TestCase("Movie.Title.2160p.WEBRip.m4k.x265", "WEBRip-2160p-mHD")]
+        [TestCase("Movie.Title.720p.HDTV.m720.x264", "HDTV-720p-mHD")]
+        public void should_parse_mhd_quality(string title, string expectedQualityName)
+        {
+            var result = QualityParser.ParseQuality(title);
+            result.Quality.Name.Should().Be(expectedQualityName);
+            result.Quality.Modifier.Should().Be(Modifier.MICROHD);
+        }
+
         [Test]
         [TestCaseSource(nameof(SelfQualityParserCases))]
         public void parsing_our_own_quality_enum_name(Quality quality)
@@ -513,6 +527,7 @@ namespace NzbDrone.Core.Test.ParserTests
         {
             var result = QualityParser.ParseQuality(title);
             result.Quality.Should().Be(quality);
+            result.Quality.Modifier.Should().Be(quality.Modifier);
 
             var version = proper ? 2 : 1;
             result.Revision.Version.Should().Be(version);

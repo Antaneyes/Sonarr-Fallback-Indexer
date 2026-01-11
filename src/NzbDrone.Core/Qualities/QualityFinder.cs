@@ -10,7 +10,7 @@ namespace NzbDrone.Core.Qualities
 
         public static Quality FindBySourceAndResolution(QualitySource source, int resolution)
         {
-            var matchingQuality = Quality.All.SingleOrDefault(q => q.Source == source && q.Resolution == resolution);
+            var matchingQuality = Quality.All.FirstOrDefault(q => q.Source == source && q.Resolution == resolution && q.Modifier == Modifier.NONE);
 
             if (matchingQuality != null)
             {

@@ -19,6 +19,14 @@ Nueva lógica de búsqueda secuencial para optimizar el uso de tus indexadores.
 
 ---
 
+### 3. Soporte MicroHD (mHD)
+Reconocimiento y gestión nativa de formatos mHD para una biblioteca más eficiente.
+- **Detección Inteligente:** Identifica tags como `mHD`, `microHD`, `m1080`, `m720`, `m4k` y `muhd`, asignándoles su propia categoría de calidad.
+- **Sincronización Automática:** Al arrancar, Sonarr integra automáticamente estas nuevas variantes en tus perfiles de calidad existentes.
+- **Control de Precisión:** Permite priorizar versiones de alta calidad y bajo peso (mHD) frente a versiones estándar o pesadas (Remux) directamente desde los ajustes de perfil.
+
+---
+
 ## 🚀 Despliegue con Docker (Listo para usar)
 
 Este repo incluye todo lo necesario para correr Sonarr con estos cambios en segundos usando Docker:

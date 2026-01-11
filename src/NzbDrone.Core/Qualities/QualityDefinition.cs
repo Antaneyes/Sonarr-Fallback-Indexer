@@ -9,7 +9,7 @@ namespace NzbDrone.Core.Qualities
         public string Title { get; set; }
 
         public string GroupName { get; set; }
-        public int Weight { get; set; }
+        public double Weight { get; set; }
 
         public double? MinSize { get; set; }
         public double? MaxSize { get; set; }

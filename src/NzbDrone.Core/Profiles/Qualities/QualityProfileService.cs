@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
-using NzbDrone.Common.Extensions;
 using NzbDrone.Core.CustomFormats;
 using NzbDrone.Core.CustomFormats.Events;
 using NzbDrone.Core.ImportLists;
@@ -85,13 +85,19 @@ namespace NzbDrone.Core.Profiles.Qualities
 
         public void Handle(ApplicationStartedEvent message)
         {
-            if (All().Any())
+            if (!_qualityProfileRepository.All().Any())
             {
-                return;
+                _logger.Info("Setting up default quality profiles");
+                SetupDefaultProfiles();
             }
+            else
+            {
+                SyncMissingQualities();
+            }
+        }
 
-            _logger.Info("Setting up default quality profiles");
-
+        private void SetupDefaultProfiles()
+        {
             AddDefaultProfile("Any",
                 Quality.SDTV,
                 Quality.SDTV,
@@ -107,7 +113,23 @@ namespace NzbDrone.Core.Profiles.Qualities
                 Quality.WEBRip1080p,
                 Quality.WEBDL1080p,
                 Quality.Bluray720p,
-                Quality.Bluray1080p);
+                Quality.Bluray1080p,
+                Quality.HDTV720pmHD,
+                Quality.HDTV1080pmHD,
+                Quality.HDTV2160pmHD,
+                Quality.WEBDL480pmHD,
+                Quality.WEBDL720pmHD,
+                Quality.WEBDL1080pmHD,
+                Quality.WEBDL2160pmHD,
+                Quality.WEBRip480pmHD,
+                Quality.WEBRip720pmHD,
+                Quality.WEBRip1080pmHD,
+                Quality.WEBRip2160pmHD,
+                Quality.Bluray480pmHD,
+                Quality.Bluray576pmHD,
+                Quality.Bluray720pmHD,
+                Quality.Bluray1080pmHD,
+                Quality.Bluray2160pmHD);
 
             AddDefaultProfile("SD",
                 Quality.SDTV,
@@ -116,28 +138,44 @@ namespace NzbDrone.Core.Profiles.Qualities
                 Quality.WEBDL480p,
                 Quality.DVD,
                 Quality.Bluray480p,
-                Quality.Bluray576p);
+                Quality.Bluray576p,
+                Quality.WEBDL480pmHD,
+                Quality.WEBRip480pmHD,
+                Quality.Bluray480pmHD,
+                Quality.Bluray576pmHD);
 
             AddDefaultProfile("HD-720p",
                 Quality.HDTV720p,
                 Quality.HDTV720p,
                 Quality.WEBRip720p,
                 Quality.WEBDL720p,
-                Quality.Bluray720p);
+                Quality.Bluray720p,
+                Quality.HDTV720pmHD,
+                Quality.WEBDL720pmHD,
+                Quality.WEBRip720pmHD,
+                Quality.Bluray720pmHD);
 
             AddDefaultProfile("HD-1080p",
                 Quality.HDTV1080p,
                 Quality.HDTV1080p,
                 Quality.WEBRip1080p,
                 Quality.WEBDL1080p,
-                Quality.Bluray1080p);
+                Quality.Bluray1080p,
+                Quality.HDTV1080pmHD,
+                Quality.WEBDL1080pmHD,
+                Quality.WEBRip1080pmHD,
+                Quality.Bluray1080pmHD);
 
             AddDefaultProfile("Ultra-HD",
                 Quality.HDTV2160p,
                 Quality.HDTV2160p,
                 Quality.WEBRip2160p,
                 Quality.WEBDL2160p,
-                Quality.Bluray2160p);
+                Quality.Bluray2160p,
+                Quality.HDTV2160pmHD,
+                Quality.WEBDL2160pmHD,
+                Quality.WEBRip2160pmHD,
+                Quality.Bluray2160pmHD);
 
             AddDefaultProfile("HD - 720p/1080p",
                 Quality.HDTV720p,
@@ -149,6 +187,41 @@ namespace NzbDrone.Core.Profiles.Qualities
                 Quality.WEBDL1080p,
                 Quality.Bluray720p,
                 Quality.Bluray1080p);
+        }
+
+        private void SyncMissingQualities()
+        {
+            var profiles = All();
+            var allQualityIds = Quality.All.Where(q => q.Id > 0).Select(q => q.Id).ToList();
+
+            foreach (var profile in profiles)
+            {
+                var profileQualities = profile.Items.SelectMany(i => i.GetQualities()).Select(q => q.Id).ToHashSet();
+                var missingIds = allQualityIds.Where(id => !profileQualities.Contains(id)).ToList();
+
+                if (missingIds.Any())
+                {
+                    _logger.Info("Syncing missing qualities for profile {0}", profile.Name);
+
+                    // Rebuild the items list using GetDefaultProfile but preserve allowed status
+                    var allowedQualityIds = profile.Items.Where(i => i.Allowed).SelectMany(i => i.GetQualities()).Select(q => q.Id).ToHashSet();
+
+                    // Add existing sub-items allowed status if a group was allowed
+                    foreach (var item in profile.Items.Where(i => i.Allowed && i.Items.Any()))
+                    {
+                        foreach (var subItem in item.Items)
+                        {
+                            allowedQualityIds.Add(subItem.Quality.Id);
+                        }
+                    }
+
+                    var allowedQualities = Quality.All.Where(q => allowedQualityIds.Contains(q.Id)).ToArray();
+                    var tempProfile = GetDefaultProfile(profile.Name, (Quality)profile.Cutoff, allowedQualities);
+
+                    profile.Items = tempProfile.Items;
+                    Update(profile);
+                }
+            }
         }
 
         public void Handle(CustomFormatAddedEvent message)
@@ -174,7 +247,7 @@ namespace NzbDrone.Core.Profiles.Qualities
             {
                 profile.FormatItems = profile.FormatItems.Where(c => c.Format.Id != message.CustomFormat.Id).ToList();
 
-                if (profile.FormatItems.Empty())
+                if (!profile.FormatItems.Any())
                 {
                     profile.MinFormatScore = 0;
                     profile.CutoffFormatScore = 0;
