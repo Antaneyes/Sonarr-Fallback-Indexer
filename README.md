@@ -27,6 +27,18 @@ Reconocimiento y gestión nativa de formatos mHD para una biblioteca más eficie
 
 ---
 
+### 4. Títulos de Series en Español
+La UI puede mostrar títulos localizados al español sin cambiar la lógica de búsqueda de Sonarr.
+- **Título visible:** Las respuestas de la API incluyen `displayTitle`, usado por la UI para mostrar el título español cuando existe.
+- **Nuevas carpetas:** Al añadir series nuevas, Sonarr puede usar el título traducido para la carpeta inicial si la traducción ya está disponible.
+- **Fuente TMDb:** Las traducciones se obtienen desde TMDb usando `es-ES`, primero desde la ficha localizada y después desde el endpoint de traducciones como respaldo.
+- **Caché local:** Los títulos se guardan en la tabla `SeriesTranslations` para no consultar TMDb en cada renderizado.
+- **Protección de metadatos:** Si SkyHook devuelve un `TitleSlug` que ya pertenece a otra serie, se omite esa actualización para evitar corromper la serie existente.
+
+Para activar esta función, configura una API key de TMDb en los ajustes generales.
+
+---
+
 ## 🚀 Despliegue con Docker (Listo para usar)
 
 Este repo incluye todo lo necesario para correr Sonarr con estos cambios en segundos usando Docker:
@@ -38,11 +50,17 @@ Este repo incluye todo lo necesario para correr Sonarr con estos cambios en segu
 > [!NOTE]
 > El despliegue de Docker monta automáticamente los binarios compilados y las traducciones corregidas en la imagen oficial de LinuxServer.
 
+> [!IMPORTANT]
+> La interfaz compilada debe montarse en `/app/sonarr/bin/UI`. Sonarr sirve los assets desde el content root `/app/sonarr/bin`; si se monta en `/app/sonarr/UI`, el backend puede estar parcheado pero la UI seguirá mostrando la versión original de la imagen.
+
+> [!IMPORTANT]
+> Si montas el directorio completo de salida sobre `/app/sonarr/bin`, conserva el apphost `Sonarr` y las librerías nativas (`*.so`) extraídas desde la imagen `linuxserver/sonarr:latest`. Esto evita mezclar binarios locales glibc con la base Alpine/musl de LinuxServer.
+
 ## 📝 Detalles Técnicos
 - **Base:** Sonarr v4 (v4.0.13+).
-- **Backend:** Cambios en `NzbDrone.Core` (ReleaseSearchService, CompletedDownloadService, Migraciones).
+- **Backend:** Cambios en `NzbDrone.Core` (ReleaseSearchService, CompletedDownloadService, Migraciones, traducciones TMDb).
 - **Idioma:** Localización completa al Español (corregida) e Inglés.
-- **Frontend:** React + Redux con nuevos componentes en InteractiveSearch y Indexer Settings.
+- **Frontend:** React + Redux con nuevos componentes en InteractiveSearch, Indexer Settings y visualización de `displayTitle`.
 
 ---
 *Desarrollado para coleccionistas que buscan el máximo nivel de automatización.*
