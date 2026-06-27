@@ -2148,5 +2148,8 @@
   "Yes": "Yes",
   "YesCancel": "Yes, Cancel",
   "Yesterday": "Yesterday",
-  "YesterdayAt": "Yesterday at {time}"
+  "YesterdayAt": "Yesterday at {time}",
+  "TMDb": "TMDb",
+  "TMDbApiKey": "TMDb API Key",
+  "TMDbApiKeyHelpText": "Used to fetch Spanish series titles from TMDb for display and new series folders"
 }

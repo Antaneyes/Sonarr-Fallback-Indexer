@@ -44,6 +44,7 @@ namespace Sonarr.Api.V3.Series
         private readonly IMapCoversToLocal _coverMapper;
         private readonly IManageCommandQueue _commandQueueManager;
         private readonly IRootFolderService _rootFolderService;
+        private readonly ISeriesTranslationService _seriesTranslationService;
 
         public SeriesController(IBroadcastSignalRMessage signalRBroadcaster,
                             ISeriesService seriesService,
@@ -53,6 +54,7 @@ namespace Sonarr.Api.V3.Series
                             IMapCoversToLocal coverMapper,
                             IManageCommandQueue commandQueueManager,
                             IRootFolderService rootFolderService,
+                            ISeriesTranslationService seriesTranslationService,
                             RootFolderValidator rootFolderValidator,
                             MappedNetworkDriveValidator mappedNetworkDriveValidator,
                             SeriesPathValidator seriesPathValidator,
@@ -72,6 +74,7 @@ namespace Sonarr.Api.V3.Series
             _coverMapper = coverMapper;
             _commandQueueManager = commandQueueManager;
             _rootFolderService = rootFolderService;
+            _seriesTranslationService = seriesTranslationService;
 
             SharedValidator.RuleFor(s => s.Path).Cascade(CascadeMode.Stop)
                 .IsValidPath()
@@ -114,11 +117,22 @@ namespace Sonarr.Api.V3.Series
 
             if (tvdbId.HasValue)
             {
-                seriesResources.AddIfNotNull(_seriesService.FindByTvdbId(tvdbId.Value).ToResource(includeSeasonImages));
+                var series = _seriesService.FindByTvdbId(tvdbId.Value);
+                var resource = series.ToResource(includeSeasonImages);
+                LinkDisplayTitle(resource, series);
+                seriesResources.AddIfNotNull(resource);
             }
             else
             {
-                seriesResources.AddRange(_seriesService.GetAllSeries().Select(s => s.ToResource(includeSeasonImages)));
+                var allSeries = _seriesService.GetAllSeries();
+                var displayTitles = _seriesTranslationService.GetDisplayTitles(allSeries);
+
+                foreach (var series in allSeries)
+                {
+                    var resource = series.ToResource(includeSeasonImages);
+                    resource.DisplayTitle = displayTitles.GetValueOrDefault(series.Id, series.Title);
+                    seriesResources.Add(resource);
+                }
             }
 
             MapCoversToLocal(seriesResources.ToArray());
@@ -218,6 +232,7 @@ namespace Sonarr.Api.V3.Series
             }
 
             var resource = series.ToResource(includeSeasonImages);
+            LinkDisplayTitle(resource, series);
             MapCoversToLocal(resource);
             FetchAndLinkSeriesStatistics(resource);
             PopulateAlternateTitles(resource);
@@ -291,6 +306,14 @@ namespace Sonarr.Api.V3.Series
         private void LinkRootFolderPath(SeriesResource resource)
         {
             resource.RootFolderPath = _rootFolderService.GetBestRootFolderPath(resource.Path);
+        }
+
+        private void LinkDisplayTitle(SeriesResource resource, NzbDrone.Core.Tv.Series series)
+        {
+            if (resource != null)
+            {
+                resource.DisplayTitle = _seriesTranslationService.GetDisplayTitle(series);
+            }
         }
 
         [NonAction]

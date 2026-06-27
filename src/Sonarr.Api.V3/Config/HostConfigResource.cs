@@ -30,6 +30,7 @@ namespace Sonarr.Api.V3.Config
         public string UrlBase { get; set; }
         public string InstanceName { get; set; }
         public string ApplicationUrl { get; set; }
+        public string TmdbApiKey { get; set; }
         public bool UpdateAutomatically { get; set; }
         public UpdateMechanism UpdateMechanism { get; set; }
         public string UpdateScriptPath { get; set; }
@@ -90,7 +91,8 @@ namespace Sonarr.Api.V3.Config
                 BackupFolder = configService.BackupFolder,
                 BackupInterval = configService.BackupInterval,
                 BackupRetention = configService.BackupRetention,
-                ApplicationUrl = configService.ApplicationUrl
+                ApplicationUrl = configService.ApplicationUrl,
+                TmdbApiKey = configService.TmdbApiKey
             };
         }
     }

@@ -25,18 +25,21 @@ namespace NzbDrone.Core.Tv
         private readonly ISeriesService _seriesService;
         private readonly IProvideSeriesInfo _seriesInfo;
         private readonly IBuildFileNames _fileNameBuilder;
+        private readonly ISeriesTranslationService _seriesTranslationService;
         private readonly IAddSeriesValidator _addSeriesValidator;
         private readonly Logger _logger;
 
         public AddSeriesService(ISeriesService seriesService,
                                 IProvideSeriesInfo seriesInfo,
                                 IBuildFileNames fileNameBuilder,
+                                ISeriesTranslationService seriesTranslationService,
                                 IAddSeriesValidator addSeriesValidator,
                                 Logger logger)
         {
             _seriesService = seriesService;
             _seriesInfo = seriesInfo;
             _fileNameBuilder = fileNameBuilder;
+            _seriesTranslationService = seriesTranslationService;
             _addSeriesValidator = addSeriesValidator;
             _logger = logger;
         }
@@ -50,6 +53,7 @@ namespace NzbDrone.Core.Tv
 
             _logger.Info("Adding Series {0} Path: [{1}]", newSeries, newSeries.Path);
             _seriesService.AddSeries(newSeries);
+            _seriesTranslationService.RefreshTranslation(newSeries);
 
             return newSeries;
         }
@@ -108,7 +112,14 @@ namespace NzbDrone.Core.Tv
                 }
             }
 
-            return _seriesService.AddSeries(seriesToAdd);
+            var addedSeries = _seriesService.AddSeries(seriesToAdd);
+
+            foreach (var series in addedSeries)
+            {
+                _seriesTranslationService.RefreshTranslation(series);
+            }
+
+            return addedSeries;
         }
 
         private Series AddSkyhookData(Series newSeries)
@@ -143,7 +154,8 @@ namespace NzbDrone.Core.Tv
         {
             if (string.IsNullOrWhiteSpace(newSeries.Path))
             {
-                var folderName = _fileNameBuilder.GetSeriesFolder(newSeries);
+                var folderSeries = GetSeriesForFolder(newSeries);
+                var folderName = _fileNameBuilder.GetSeriesFolder(folderSeries);
                 newSeries.Path = Path.Combine(newSeries.RootFolderPath, folderName);
             }
 
@@ -164,6 +176,27 @@ namespace NzbDrone.Core.Tv
             }
 
             return newSeries;
+        }
+
+        private Series GetSeriesForFolder(Series series)
+        {
+            var displayTitle = _seriesTranslationService.FetchDisplayTitle(series);
+
+            if (displayTitle.IsNullOrWhiteSpace() || displayTitle == series.Title)
+            {
+                return series;
+            }
+
+            return new Series
+            {
+                Title = displayTitle,
+                Year = series.Year,
+                ImdbId = series.ImdbId,
+                TvdbId = series.TvdbId,
+                TvMazeId = series.TvMazeId,
+                TvRageId = series.TvRageId,
+                TmdbId = series.TmdbId
+            };
         }
     }
 }

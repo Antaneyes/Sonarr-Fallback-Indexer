@@ -54,6 +54,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
 
   const {
     title,
+    displayTitle,
     monitored,
     monitorNewItems,
     status,
@@ -92,6 +93,7 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
   const [isEditSeriesModalOpen, setIsEditSeriesModalOpen] = useState(false);
   const [isDeleteSeriesModalOpen, setIsDeleteSeriesModalOpen] = useState(false);
   const [selectState, selectDispatch] = useSelect();
+  const visibleTitle = displayTitle || title;
 
   const onRefreshPress = useCallback(() => {
     dispatch(
@@ -207,11 +209,15 @@ function SeriesIndexRow(props: SeriesIndexRowProps) {
                   />
 
                   {hasBannerError && (
-                    <div className={styles.overlayTitle}>{title}</div>
+                    <div className={styles.overlayTitle}>{visibleTitle}</div>
                   )}
                 </Link>
               ) : (
-                <SeriesTitleLink titleSlug={titleSlug} title={title} />
+                <SeriesTitleLink
+                  titleSlug={titleSlug}
+                  title={title}
+                  displayTitle={displayTitle}
+                />
               )}
             </VirtualTableRowCell>
           );

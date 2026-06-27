@@ -53,6 +53,7 @@ class AddNewSeriesSearchResult extends Component {
     const {
       tvdbId,
       title,
+      displayTitle,
       titleSlug,
       year,
       network,
@@ -74,6 +75,7 @@ class AddNewSeriesSearchResult extends Component {
     const {
       isNewAddSeriesModalOpen
     } = this.state;
+    const visibleTitle = displayTitle || title;
 
     const linkProps = isExistingSeries ? { to: `/series/${titleSlug}` } : { onPress: this.onPress };
     let seasons = translate('OneSeason');
@@ -106,10 +108,10 @@ class AddNewSeriesSearchResult extends Component {
             <div className={styles.titleRow}>
               <div className={styles.titleContainer}>
                 <div className={styles.title}>
-                  {title}
+                  {visibleTitle}
 
                   {
-                    !title.contains(year) && year ?
+                    !visibleTitle.contains(year) && year ?
                       <span className={styles.year}>
                         ({year})
                       </span> :
@@ -238,6 +240,7 @@ class AddNewSeriesSearchResult extends Component {
           isOpen={isNewAddSeriesModalOpen && !isExistingSeries}
           tvdbId={tvdbId}
           title={title}
+          displayTitle={displayTitle}
           year={year}
           overview={overview}
           folder={folder}
@@ -253,6 +256,7 @@ class AddNewSeriesSearchResult extends Component {
 AddNewSeriesSearchResult.propTypes = {
   tvdbId: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
+  displayTitle: PropTypes.string,
   titleSlug: PropTypes.string.isRequired,
   year: PropTypes.number.isRequired,
   network: PropTypes.string,

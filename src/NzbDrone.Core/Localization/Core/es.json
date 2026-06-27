@@ -2147,5 +2147,8 @@
     "IndexerSettingsFailDownloadsHelpText": "Mientras se procesan las descargas completadas, {appName} tratará esos tipos de archivo seleccionados como descargas fallidas.",
     "IndexerSettingsFailDownloads": "Fallo de Descargas",
     "NotificationsTelegramSettingsIncludeInstanceNameHelpText": "Opcionalmente incluye el nombre de la instancia en la notificación",
-    "NotificationsTelegramSettingsIncludeInstanceName": "Incluir el nombre de la instancia en el título"
+    "NotificationsTelegramSettingsIncludeInstanceName": "Incluir el nombre de la instancia en el título",
+    "TMDb": "TMDb",
+    "TMDbApiKey": "Clave API de TMDb",
+    "TMDbApiKeyHelpText": "Se usa para obtener títulos de series en español desde TMDb para la interfaz y las carpetas de series nuevas"
 }

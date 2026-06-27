@@ -346,6 +346,13 @@ namespace NzbDrone.Core.Configuration
             set { SetValue("UILanguage", value); }
         }
 
+        public string TmdbApiKey
+        {
+            get { return GetValue("TmdbApiKey", string.Empty); }
+
+            set { SetValue("TmdbApiKey", value); }
+        }
+
         public bool CleanupMetadataImages
         {
             get { return GetValueBoolean("CleanupMetadataImages", true); }

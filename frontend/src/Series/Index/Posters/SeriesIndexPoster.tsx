@@ -52,6 +52,7 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
 
   const {
     title,
+    displayTitle,
     monitored,
     status,
     path,
@@ -123,6 +124,7 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
   }, [setIsDeleteSeriesModalOpen]);
 
   const link = `/series/${titleSlug}`;
+  const visibleTitle = displayTitle || title;
 
   const elementStyle = {
     width: `${posterWidth}px`,
@@ -131,7 +133,7 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
 
   return (
     <div className={styles.content}>
-      <div className={styles.posterContainer} title={title}>
+      <div className={styles.posterContainer} title={visibleTitle}>
         {isSelectMode ? <SeriesIndexPosterSelect seriesId={seriesId} /> : null}
 
         <Label className={styles.controls}>
@@ -187,7 +189,7 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
           />
 
           {hasPosterError ? (
-            <div className={styles.overlayTitle}>{title}</div>
+            <div className={styles.overlayTitle}>{visibleTitle}</div>
           ) : null}
         </Link>
       </div>
@@ -205,8 +207,8 @@ function SeriesIndexPoster(props: SeriesIndexPosterProps) {
       />
 
       {showTitle ? (
-        <div className={styles.title} title={title}>
-          {title}
+        <div className={styles.title} title={visibleTitle}>
+          {visibleTitle}
         </div>
       ) : null}
 

@@ -28,6 +28,7 @@ namespace NzbDrone.Core.Tv
         private readonly ICheckIfSeriesShouldBeRefreshed _checkIfSeriesShouldBeRefreshed;
         private readonly IConfigService _configService;
         private readonly IAutoTaggingService _autoTaggingService;
+        private readonly ISeriesTranslationService _seriesTranslationService;
         private readonly Logger _logger;
 
         public RefreshSeriesService(IProvideSeriesInfo seriesInfo,
@@ -38,6 +39,7 @@ namespace NzbDrone.Core.Tv
                                     ICheckIfSeriesShouldBeRefreshed checkIfSeriesShouldBeRefreshed,
                                     IConfigService configService,
                                     IAutoTaggingService autoTaggingService,
+                                    ISeriesTranslationService seriesTranslationService,
                                     Logger logger)
         {
             _seriesInfo = seriesInfo;
@@ -48,6 +50,7 @@ namespace NzbDrone.Core.Tv
             _checkIfSeriesShouldBeRefreshed = checkIfSeriesShouldBeRefreshed;
             _configService = configService;
             _autoTaggingService = autoTaggingService;
+            _seriesTranslationService = seriesTranslationService;
             _logger = logger;
         }
 
@@ -87,9 +90,31 @@ namespace NzbDrone.Core.Tv
                 series.TvdbId = seriesInfo.TvdbId;
             }
 
+            var titleSlug = seriesInfo.TitleSlug;
+            var conflictingSlugSeries = _seriesService.GetAllSeries()
+                                                      .FirstOrDefault(s => s.Id != series.Id &&
+                                                                           s.TitleSlug.IsNotNullOrWhiteSpace() &&
+                                                                           s.TitleSlug == titleSlug);
+
+            if (conflictingSlugSeries != null)
+            {
+                _logger.Warn("Series '{0}' (tvdbid {1}) refresh returned title slug '{2}', but it is already used by '{3}' (tvdbid {4}). Skipping metadata update to avoid applying the wrong series.",
+                    series.Title,
+                    series.TvdbId,
+                    titleSlug,
+                    conflictingSlugSeries.Title,
+                    conflictingSlugSeries.TvdbId);
+
+                series.LastInfoSync = DateTime.UtcNow;
+                _seriesService.UpdateSeries(series, publishUpdatedEvent: false);
+                _eventAggregator.PublishEvent(new SeriesUpdatedEvent(series));
+
+                return series;
+            }
+
             series.Title = seriesInfo.Title;
             series.Year = seriesInfo.Year;
-            series.TitleSlug = seriesInfo.TitleSlug;
+            series.TitleSlug = titleSlug;
             series.TvRageId = seriesInfo.TvRageId;
             series.TvMazeId = seriesInfo.TvMazeId;
             series.TmdbId = seriesInfo.TmdbId;
@@ -126,6 +151,7 @@ namespace NzbDrone.Core.Tv
             series.Seasons = UpdateSeasons(series, seriesInfo);
 
             _seriesService.UpdateSeries(series, publishUpdatedEvent: false);
+            _seriesTranslationService.RefreshTranslation(series);
             _refreshEpisodeService.RefreshEpisodeInfo(series, episodes);
 
             _logger.Debug("Finished series refresh for {0}", series.Title);

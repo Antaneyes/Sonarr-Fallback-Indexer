@@ -177,6 +177,7 @@ class SeriesDetails extends Component {
       imdbId,
       tmdbId,
       title,
+      displayTitle,
       runtime,
       ratings,
       path,
@@ -250,8 +251,12 @@ class SeriesDetails extends Component {
 
     const fanartUrl = getFanartUrl(images);
 
+    const visibleTitle = displayTitle || title;
+    const previousSeriesTitle = previousSeries.displayTitle || previousSeries.title;
+    const nextSeriesTitle = nextSeries.displayTitle || nextSeries.title;
+
     return (
-      <PageContent title={title}>
+      <PageContent title={visibleTitle}>
         <PageToolbar>
           <PageToolbarSection>
             <PageToolbarButton
@@ -360,7 +365,7 @@ class SeriesDetails extends Component {
                     </div>
 
                     <div className={styles.title}>
-                      {title}
+                      {visibleTitle}
                     </div>
 
                     {
@@ -386,7 +391,7 @@ class SeriesDetails extends Component {
                       className={styles.seriesNavigationButton}
                       name={icons.ARROW_LEFT}
                       size={30}
-                      title={translate('SeriesDetailsGoTo', { title: previousSeries.title })}
+                      title={translate('SeriesDetailsGoTo', { title: previousSeriesTitle })}
                       to={`/series/${previousSeries.titleSlug}`}
                     />
 
@@ -394,7 +399,7 @@ class SeriesDetails extends Component {
                       className={styles.seriesNavigationButton}
                       name={icons.ARROW_RIGHT}
                       size={30}
-                      title={translate('SeriesDetailsGoTo', { title: nextSeries.title })}
+                      title={translate('SeriesDetailsGoTo', { title: nextSeriesTitle })}
                       to={`/series/${nextSeries.titleSlug}`}
                     />
                   </div>
@@ -691,7 +696,7 @@ class SeriesDetails extends Component {
           <InteractiveImportModal
             isOpen={isManageEpisodesOpen}
             seriesId={id}
-            title={title}
+            title={visibleTitle}
             folder={path}
             initialSortKey="relativePath"
             initialSortDirection={sortDirections.DESCENDING}
@@ -740,6 +745,7 @@ SeriesDetails.propTypes = {
   imdbId: PropTypes.string,
   tmdbId: PropTypes.number,
   title: PropTypes.string.isRequired,
+  displayTitle: PropTypes.string,
   runtime: PropTypes.number.isRequired,
   ratings: PropTypes.object.isRequired,
   path: PropTypes.string.isRequired,

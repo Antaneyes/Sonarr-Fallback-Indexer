@@ -64,6 +64,7 @@ class AddNewSeriesModalContent extends Component {
   render() {
     const {
       title,
+      displayTitle,
       year,
       overview,
       images,
@@ -83,14 +84,15 @@ class AddNewSeriesModalContent extends Component {
       onInputChange,
       ...otherProps
     } = this.props;
+    const visibleTitle = displayTitle || title;
 
     return (
       <ModalContent onModalClose={onModalClose}>
         <ModalHeader>
-          {title}
+          {visibleTitle}
 
           {
-            !title.contains(year) && !!year &&
+            !visibleTitle.contains(year) && !!year &&
               <span className={styles.year}>({year})</span>
           }
         </ModalHeader>
@@ -265,7 +267,7 @@ class AddNewSeriesModalContent extends Component {
             isSpinning={isAdding}
             onPress={this.onAddSeriesPress}
           >
-            {translate('AddSeriesWithTitle', { title })}
+            {translate('AddSeriesWithTitle', { title: visibleTitle })}
           </SpinnerButton>
         </ModalFooter>
       </ModalContent>
@@ -275,6 +277,7 @@ class AddNewSeriesModalContent extends Component {
 
 AddNewSeriesModalContent.propTypes = {
   title: PropTypes.string.isRequired,
+  displayTitle: PropTypes.string,
   year: PropTypes.number.isRequired,
   overview: PropTypes.string,
   initialSeriesType: PropTypes.string.isRequired,

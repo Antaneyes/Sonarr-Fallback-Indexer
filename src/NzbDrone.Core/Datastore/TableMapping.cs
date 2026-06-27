@@ -117,6 +117,8 @@ namespace NzbDrone.Core.Datastore
                   .Ignore(s => s.RootFolderPath)
                   .HasOne(s => s.QualityProfile, s => s.QualityProfileId);
 
+            Mapper.Entity<SeriesTranslation>("SeriesTranslations").RegisterModel();
+
             Mapper.Entity<EpisodeFile>("EpisodeFiles").RegisterModel()
                   .HasOne(f => f.Series, f => f.SeriesId)
                   .LazyLoad(x => x.Episodes,

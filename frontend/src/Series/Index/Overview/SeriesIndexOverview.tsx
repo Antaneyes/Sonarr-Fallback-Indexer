@@ -62,6 +62,7 @@ function SeriesIndexOverview(props: SeriesIndexOverviewProps) {
 
   const {
     title,
+    displayTitle,
     monitored,
     status,
     path,
@@ -124,6 +125,7 @@ function SeriesIndexOverview(props: SeriesIndexOverviewProps) {
   }, [setIsDeleteSeriesModalOpen]);
 
   const link = `/series/${titleSlug}`;
+  const visibleTitle = displayTitle || title;
 
   const elementStyle = {
     width: `${posterWidth}px`,
@@ -189,7 +191,7 @@ function SeriesIndexOverview(props: SeriesIndexOverviewProps) {
         <div className={styles.info} style={{ maxHeight: contentHeight }}>
           <div className={styles.titleRow}>
             <Link className={styles.title} to={link}>
-              {title}
+              {visibleTitle}
             </Link>
 
             <div className={styles.actions}>

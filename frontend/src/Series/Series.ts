@@ -94,6 +94,7 @@ interface Series extends ModelBase {
   status: SeriesStatus;
   tags: number[];
   title: string;
+  displayTitle?: string;
   titleSlug: string;
   tvdbId: number;
   tvMazeId: number;
