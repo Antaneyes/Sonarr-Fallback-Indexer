@@ -15,7 +15,7 @@ services:
       - ./_output/net6.0/Sonarr.SignalR.dll:/app/sonarr/bin/Sonarr.SignalR.dll:ro
       - ./_output/net6.0/Sonarr.Mono.dll:/app/sonarr/bin/Sonarr.Mono.dll:ro
       - ./_output/net6.0/Localization:/app/sonarr/bin/Localization:ro
-      - ./_output/UI:/app/sonarr/UI:ro
+      - ./_output/UI:/app/sonarr/bin/UI:ro
       - C:/docker/sonarr-test/config:/config
       - G:/Torrent:/downloads
       - G:/Plex/Series:/tv
