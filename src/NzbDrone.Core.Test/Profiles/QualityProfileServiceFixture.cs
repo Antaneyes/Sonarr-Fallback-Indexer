@@ -42,9 +42,19 @@ namespace NzbDrone.Core.Test.Profiles
         // We don't want to keep adding them back if a user deleted them on purpose.
         public void Init_should_skip_if_any_profiles_already_exist()
         {
+            Mocker.GetMock<ICustomFormatService>()
+                  .Setup(s => s.All())
+                  .Returns(new List<CustomFormat>());
+
+            var items = Subject.GetDefaultProfile("Test").Items;
+
             Mocker.GetMock<IQualityProfileRepository>()
                   .Setup(s => s.All())
-                  .Returns(Builder<QualityProfile>.CreateListOfSize(2).Build().ToList());
+                  .Returns(Builder<QualityProfile>.CreateListOfSize(2)
+                                                  .All()
+                                                  .With(p => p.Items = items)
+                                                  .Build()
+                                                  .ToList());
 
             Subject.Handle(new ApplicationStartedEvent());
 

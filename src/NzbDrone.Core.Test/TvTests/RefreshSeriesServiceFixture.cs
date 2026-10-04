@@ -41,6 +41,10 @@ namespace NzbDrone.Core.Test.TvTests
                   .Setup(s => s.GetSeries(_series.Id))
                   .Returns(_series);
 
+            Mocker.GetMock<ISeriesService>()
+                  .Setup(s => s.GetAllSeries())
+                  .Returns(new List<Series> { _series });
+
             Mocker.GetMock<IProvideSeriesInfo>()
                   .Setup(s => s.GetSeriesInfo(It.IsAny<int>()))
                   .Callback<int>(p => { throw new SeriesNotFoundException(p); });
