@@ -1,0 +1,13 @@
+# Contexto de la imagen: solo el código fuente
+.git
+.github
+.devcontainer
+.vscode
+.idea
+node_modules
+_output
+_tests
+_artifacts
+**/bin
+**/obj
+*.trx

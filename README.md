@@ -39,22 +39,18 @@ Para activar esta función, configura una API key de TMDb en los ajustes general
 
 ---
 
-## 🚀 Despliegue con Docker (Listo para usar)
+## 🚀 Despliegue con Docker
 
-Este repo incluye todo lo necesario para correr Sonarr con estos cambios en segundos usando Docker:
+El `Dockerfile` de este repo compila Sonarr completo (backend y UI) y genera una imagen basada en la de LinuxServer, con el programa original sustituido entero por esta versión:
 
-1. **Configurar:** Ajusta las rutas en `docker-compose.yml`.
-2. **Lanzar:** Ejecuta `launch_sonarr.bat` (en Windows) o `docker-compose up -d`.
-3. **Acceso:** Entra en `http://localhost:8989`.
+```bash
+docker build -t local/sonarr-fallback:<versión> .
+```
 
-> [!NOTE]
-> El despliegue de Docker monta automáticamente los binarios compilados y las traducciones corregidas en la imagen oficial de LinuxServer.
-
-> [!IMPORTANT]
-> La interfaz compilada debe montarse en `/app/sonarr/bin/UI`. Sonarr sirve los assets desde el content root `/app/sonarr/bin`; si se monta en `/app/sonarr/UI`, el backend puede estar parcheado pero la UI seguirá mostrando la versión original de la imagen.
+Después basta con usar esa imagen en el compose (`image: local/sonarr-fallback:<versión>`), sin montar binarios. El `docker-compose.yml` del repo es un ejemplo que la construye directamente (`docker compose up -d --build`, o `launch_sonarr.bat` en Windows). La interfaz estará en `http://localhost:8989`.
 
 > [!IMPORTANT]
-> Si montas el directorio completo de salida sobre `/app/sonarr/bin`, conserva el apphost `Sonarr` y las librerías nativas (`*.so`) extraídas desde la imagen `linuxserver/sonarr:latest`. Esto evita mezclar binarios locales glibc con la base Alpine/musl de LinuxServer.
+> El backend se compila con el SDK exacto que fija `global.json` (6.0.405). Con otro SDK 6.0 se empaquetan versiones distintas de algunas DLL y Sonarr no arranca. `LSIO_TAG` en el `Dockerfile` debe ser la versión de upstream en la que se basa el fork (p. ej. `4.0.20.3014-ls326`); actualízala cada vez que se fusione una versión nueva de Sonarr.
 
 ## 📝 Detalles Técnicos
 - **Base:** Sonarr v4 (v4.0.13+).
