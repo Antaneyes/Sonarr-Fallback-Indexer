@@ -99,6 +99,7 @@ function ManageIndexersEditModalContent(
     enableRss,
     enableAutomaticSearch,
     enableInteractiveSearch,
+    isFallback,
     priority,
     onSavePress,
     onModalClose,

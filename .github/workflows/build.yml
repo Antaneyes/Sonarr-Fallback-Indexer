@@ -237,7 +237,8 @@ jobs:
         integration_test,
         deploy,
       ]
-    if: ${{ !cancelled() && (github.ref_name == 'develop' || github.ref_name == 'main') }}
+    # Solo en el repo oficial: en el fork no existe el webhook de Discord y el trabajo falla siempre.
+    if: ${{ !cancelled() && github.repository == 'Sonarr/Sonarr' && (github.ref_name == 'develop' || github.ref_name == 'main') }}
     env:
       STATUS: ${{ contains(needs.*.result, 'failure') && 'failure' || 'success' }}
     runs-on: ubuntu-latest

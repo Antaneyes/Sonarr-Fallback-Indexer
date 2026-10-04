@@ -14,7 +14,7 @@ namespace NzbDrone.Core.Datastore.Migration
                 .WithColumn("TmdbId").AsInt32().NotNullable()
                 .WithColumn("Language").AsString().NotNullable()
                 .WithColumn("Title").AsString().Nullable()
-                .WithColumn("LastUpdated").AsDateTime().NotNullable();
+                .WithColumn("LastUpdated").AsDateTimeOffset().NotNullable();
 
             Create.Index().OnTable("SeriesTranslations").OnColumn("SeriesId");
             Create.Index().OnTable("SeriesTranslations").OnColumn("TmdbId");

@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import ClientSideCollectionAppState from 'App/State/ClientSideCollectionAppState';
 import ReleasesAppState from 'App/State/ReleasesAppState';
 import Alert from 'Components/Alert';
-import Button from 'Components/Link/Button';
 import Icon from 'Components/Icon';
+import Button from 'Components/Link/Button';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import FilterMenu from 'Components/Menu/FilterMenu';
 import PageMenuButton from 'Components/Menu/PageMenuButton';
@@ -154,6 +154,10 @@ function InteractiveSearch({ type, searchPayload }: InteractiveSearchProps) {
     [dispatch]
   );
 
+  const handleFallbackSearchPress = useCallback(() => {
+    dispatch(fetchReleases({ ...searchPayload, includeFallback: true }));
+  }, [searchPayload, dispatch]);
+
   const handleGrabPress = useCallback(
     (payload: object) => {
       dispatch(grabRelease(payload));
@@ -190,8 +194,8 @@ function InteractiveSearch({ type, searchPayload }: InteractiveSearchProps) {
         />
         <Button
           className={styles.fallbackButton}
-          onPress={() => dispatch(fetchReleases({ ...searchPayload, includeFallback: true }))}
           title={translate('SearchInFallbackIndexersHelpText')}
+          onPress={handleFallbackSearchPress}
         >
           <Icon name={icons.SEARCH} /> {translate('SearchInFallback')}
         </Button>
