@@ -5,7 +5,7 @@
 # LSIO_TAG debe ser la versión de upstream en la que se basa este fork, para que el
 # sistema base sea el mismo con el que se publicó esa versión. El programa se sustituye
 # entero, así que la versión de Sonarr que trae la imagen base no se usa.
-ARG LSIO_TAG=4.0.20.3014-ls326
+ARG LSIO_TAG=4.0.20.3014-ls329
 
 # --- Backend --------------------------------------------------------------------------
 # SDK Alpine para compilar para musl de forma nativa; global.json fija exactamente el SDK 6.0.405
