@@ -50,10 +50,13 @@ docker build -t local/sonarr-fallback:<versión> .
 Después basta con usar esa imagen en el compose (`image: local/sonarr-fallback:<versión>`), sin montar binarios. El `docker-compose.yml` del repo es un ejemplo que la construye directamente (`docker compose up -d --build`, o `launch_sonarr.bat` en Windows). La interfaz estará en `http://localhost:8989`.
 
 > [!IMPORTANT]
-> El backend se compila con el SDK exacto que fija `global.json` (6.0.405). Con otro SDK 6.0 se empaquetan versiones distintas de algunas DLL y Sonarr no arranca. `LSIO_TAG` en el `Dockerfile` debe ser la versión de upstream en la que se basa el fork (p. ej. `4.0.20.3014-ls326`); actualízala cada vez que se fusione una versión nueva de Sonarr.
+> El backend se compila con el SDK exacto que fija `global.json` (6.0.405). Con otro SDK 6.0 se empaquetan versiones distintas de algunas DLL y Sonarr no arranca. `LSIO_TAG` en el `Dockerfile` debe ser la versión de upstream en la que se basa el fork (p. ej. `4.0.20.3014-ls6`); actualízala cada vez que se fusione una versión nueva de Sonarr. LinuxServer a veces reinicia la numeración `-lsNNN` (en 2026-11 pasó de `-ls329` a `-ls6` con la misma versión): la buena es la publicada más recientemente.
+
+> [!WARNING]
+> Las migraciones propias del fork son la 218 (`add_is_fallback_to_indexers`) y la 219 (`add_series_translations`). En Sonarr v5 esos números ya los usa upstream y v5 crea su propia tabla `SeriesTranslations` (con traducciones e idioma de metadatos por serie), así que antes de pasar a v5 hay que renumerarlas (1000+) y sustituir los títulos en español vía TMDb por la función nativa.
 
 ## 📝 Detalles Técnicos
-- **Base:** Sonarr v4 (v4.0.13+).
+- **Base:** Sonarr v4 (4.0.20.3014).
 - **Backend:** Cambios en `NzbDrone.Core` (ReleaseSearchService, CompletedDownloadService, Migraciones, traducciones TMDb).
 - **Idioma:** Localización completa al Español (corregida) e Inglés.
 - **Frontend:** React + Redux con nuevos componentes en InteractiveSearch, Indexer Settings y visualización de `displayTitle`.
